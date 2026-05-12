@@ -32,7 +32,7 @@ app.use('/api/testimonials', testimonialRoutes);
 
 // ── Admin Specific Endpoints ────────────────────────────────
 // Authentication Middleware
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Essence2026';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '7259';
 
 app.use('/api/admin', (req, res, next) => {
   const providedPassword = req.headers['x-admin-password'];
