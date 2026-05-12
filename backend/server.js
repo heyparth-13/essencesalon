@@ -55,8 +55,12 @@ app.get('*', (req, res) => {
 });
 
 // ── Start Server ────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`\n🌿 Essence Salon & Spa API running at http://localhost:${PORT}`);
-  console.log(`📋 Admin panel: http://localhost:${PORT}/admin.html`);
-  console.log(`🌐 Website:     http://localhost:${PORT}\n`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`\n🌿 Essence Salon & Spa API running at http://localhost:${PORT}`);
+    console.log(`📋 Admin panel: http://localhost:${PORT}/admin.html`);
+    console.log(`🌐 Website:     http://localhost:${PORT}\n`);
+  });
+}
+
+module.exports = app;
