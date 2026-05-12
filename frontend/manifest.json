@@ -1,0 +1,22 @@
+{
+  "name": "Essence Salon Admin",
+  "short_name": "EssenceAdmin",
+  "start_url": "/admin.html",
+  "display": "standalone",
+  "background_color": "#FAF7F0",
+  "theme_color": "#2D5016",
+  "description": "Admin panel for Essence Salon & Spa bookings",
+  "icons": [
+    {
+      "src": "/images/gallery4.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/gallery4.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

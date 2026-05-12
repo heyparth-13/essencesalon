@@ -1,9 +1,48 @@
 const API = '/api';
+let authToken = sessionStorage.getItem('essence_admin_token') || '';
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    loadAll();
+    if (authToken) {
+        document.getElementById('loginOverlay').style.display = 'none';
+        loadAll();
+    }
 });
+
+function attemptLogin() {
+    const pwd = document.getElementById('adminPassword').value;
+    if (!pwd) return;
+    
+    // Test the password by fetching stats
+    fetch(`${API}/admin/stats`, { headers: { 'x-admin-password': pwd } })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                authToken = pwd;
+                sessionStorage.setItem('essence_admin_token', pwd);
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('loginError').style.display = 'none';
+                loadAll();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        })
+        .catch(() => {
+            document.getElementById('loginError').style.display = 'block';
+        });
+}
+
+// Wrapper for fetch to include auth headers
+async function authFetch(url, options = {}) {
+    options.headers = { ...options.headers, 'x-admin-password': authToken };
+    const res = await fetch(url, options);
+    if (res.status === 401) {
+        sessionStorage.removeItem('essence_admin_token');
+        document.getElementById('loginOverlay').style.display = 'flex';
+        throw new Error('Unauthorized');
+    }
+    return res;
+}
 
 function loadAll() {
     loadStats();
@@ -14,7 +53,7 @@ function loadAll() {
 
 async function loadStats() {
     try {
-        const r = await fetch(`${API}/admin/stats`);
+        const r = await authFetch(`${API}/admin/stats`);
         const { data } = await r.json();
         
         document.getElementById('sTotal').textContent = data.total ?? 0;
@@ -31,7 +70,7 @@ async function loadBookings() {
     if (!tbody) return;
 
     try {
-        const r = await fetch(`${API}/admin/bookings/list`);
+        const r = await authFetch(`${API}/admin/bookings/list`);
         const { data } = await r.json();
         
         if (!data || !data.length) { 
@@ -66,7 +105,7 @@ async function loadBookings() {
 
 async function updateStatus(id, status, phoneEnc, nameEnc, serviceEnc, dateEnc, timeEnc) {
     try {
-        await fetch(`${API}/admin/bookings/${id}`, { 
+        await authFetch(`${API}/admin/bookings/${id}`, { 
             method:'PATCH', 
             headers:{'Content-Type':'application/json'}, 
             body: JSON.stringify({status}) 
@@ -105,7 +144,7 @@ function sendWA(phoneEnc, nameEnc, serviceEnc, dateEnc, timeEnc) {
 async function deleteBooking(id) {
     if (!confirm('Delete this booking permanently?')) return;
     try {
-        await fetch(`${API}/admin/bookings/${id}`, { method:'DELETE' });
+        await authFetch(`${API}/admin/bookings/${id}`, { method:'DELETE' });
         document.getElementById(`row-${id}`)?.remove();
         loadStats();
     } catch (e) {

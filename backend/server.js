@@ -31,6 +31,18 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 
 // ── Admin Specific Endpoints ────────────────────────────────
+// Authentication Middleware
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Essence2026';
+
+app.use('/api/admin', (req, res, next) => {
+  const providedPassword = req.headers['x-admin-password'];
+  if (providedPassword === ADMIN_PASSWORD) {
+    next();
+  } else {
+    res.status(401).json({ success: false, error: 'Unauthorized. Invalid or missing password.' });
+  }
+});
+
 app.use('/api/admin/bookings', bookingRoutes); // Re-using booking router for admin paths
 
 app.get('/api/admin/stats', (req, res) => {

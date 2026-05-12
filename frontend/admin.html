@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Admin — Essence Salon & Spa</title>
     
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2D5016">
+    <link rel="apple-touch-icon" href="images/gallery4.jpg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
     
@@ -12,6 +19,16 @@
     <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
+    <!-- LOGIN OVERLAY -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <h2>Essence Admin</h2>
+            <p>Please enter the master password to access the dashboard.</p>
+            <input type="password" id="adminPassword" placeholder="Enter Password" />
+            <button onclick="attemptLogin()">Login</button>
+            <p id="loginError" style="color:var(--danger);font-size:0.8rem;margin-top:1rem;display:none;">Incorrect password.</p>
+        </div>
+    </div>
     <header>
         <h1>🌿 Essence Salon Admin Panel</h1>
         <a href="index.html">← Back to Website</a>
@@ -69,5 +86,12 @@
 
     <!-- Scripts -->
     <script src="assets/js/admin.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW Registration failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>
