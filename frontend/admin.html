@@ -25,12 +25,23 @@
             <h2>Essence Admin</h2>
             <p>Please enter the master password to access the dashboard.</p>
             <input type="password" id="adminPassword" placeholder="Enter Password" />
-            <button onclick="attemptLogin()">Login</button>
+            <button onclick="attemptLogin()" style="margin-bottom:1rem">Login</button>
+            
+            <!-- Install Button -->
+            <button id="installAppBtn" class="install-btn" style="display:none; background: #fff; color: var(--green); border: 2px solid var(--green);">
+                📱 Install App to Home Screen
+            </button>
+            
             <p id="loginError" style="color:var(--danger);font-size:0.8rem;margin-top:1rem;display:none;">Incorrect password.</p>
         </div>
     </div>
     <header>
-        <h1>🌿 Essence Salon Admin Panel</h1>
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <h1>🌿 Essence Salon Admin</h1>
+            <button id="headerInstallBtn" class="install-btn" style="display:none; padding: 0.3rem 0.8rem; font-size: 0.8rem; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; color: white; cursor: pointer;">
+                ⬇ Install App
+            </button>
+        </div>
         <a href="index.html">← Back to Website</a>
     </header>
 
