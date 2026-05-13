@@ -1,20 +1,20 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Pool } = require('pg');
+require('dotenv').config();
 
-const dbPath = path.resolve(__dirname, '../essence_salon.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('❌ Database Connection Error:', err.message);
-  } else {
-    console.log('✅ Connected to SQLite database');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
   }
 });
 
-const initializeDatabase = () => {
-  db.serialize(() => {
+const query = (text, params) => pool.query(text, params);
+
+const initializeDatabase = async () => {
+  try {
     // Bookings table
-    db.run(`CREATE TABLE IF NOT EXISTS bookings (
-      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    await query(`CREATE TABLE IF NOT EXISTS bookings (
+      id          SERIAL PRIMARY KEY,
       full_name   TEXT NOT NULL,
       phone       TEXT NOT NULL,
       email       TEXT,
@@ -24,12 +24,12 @@ const initializeDatabase = () => {
       time_slot   TEXT,
       message     TEXT,
       status      TEXT DEFAULT 'pending',
-      created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`);
 
     // Staff table
-    db.run(`CREATE TABLE IF NOT EXISTS staff (
-      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    await query(`CREATE TABLE IF NOT EXISTS staff (
+      id         SERIAL PRIMARY KEY,
       name       TEXT NOT NULL,
       role       TEXT NOT NULL,
       experience TEXT NOT NULL,
@@ -39,8 +39,8 @@ const initializeDatabase = () => {
     )`);
 
     // Services table
-    db.run(`CREATE TABLE IF NOT EXISTS services (
-      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    await query(`CREATE TABLE IF NOT EXISTS services (
+      id          SERIAL PRIMARY KEY,
       name        TEXT NOT NULL,
       description TEXT,
       price_from  INTEGER,
@@ -50,25 +50,28 @@ const initializeDatabase = () => {
     )`);
 
     // Testimonials table
-    db.run(`CREATE TABLE IF NOT EXISTS testimonials (
-      id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    await query(`CREATE TABLE IF NOT EXISTS testimonials (
+      id        SERIAL PRIMARY KEY,
       client    TEXT NOT NULL,
       review    TEXT NOT NULL,
       rating    INTEGER DEFAULT 5,
       service   TEXT,
       approved  INTEGER DEFAULT 1,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`);
 
-    seedData();
-  });
+    console.log('✅ Database tables initialized');
+    await seedData();
+  } catch (err) {
+    console.error('❌ Database Initialization Error:', err.message);
+  }
 };
 
-const seedData = () => {
-  // Seed Staff
-  db.get("SELECT COUNT(*) as cnt FROM staff", (err, row) => {
-    if (row && row.cnt === 0) {
-      const stmt = db.prepare(`INSERT INTO staff (name, role, experience, specialty, phone, is_head) VALUES (?,?,?,?,?,?)`);
+const seedData = async () => {
+  try {
+    // Seed Staff
+    const staffCount = await query("SELECT COUNT(*) FROM staff");
+    if (parseInt(staffCount.rows[0].count) === 0) {
       const staff = [
         ['Vipul Valand', 'Co-Founder & Head Stylist', '20+ Years', 'Master Hair Styling, Advanced Colour, Men & Women Cuts', '9909706587', 1],
         ['Bhavesh Sharma', 'Co-Founder & Beauty Director', '22+ Years', 'Bridal Makeovers, Skin Treatments, Unisex Styling, Spa Therapies', '9909706587', 1],
@@ -76,16 +79,15 @@ const seedData = () => {
         ['Dharti', "Women's Specialist", '5+ Years', "Ladies Haircut, Facial, Waxing, Bridal Prep, Mehandi", null, 0],
         ['Ankit Sharma', "Men's Specialist", '8+ Years', "Men's Cut, Beard Art, Colour, Hair Treatments", null, 0]
       ];
-      staff.forEach(s => stmt.run(...s));
-      stmt.finalize();
+      for (const s of staff) {
+        await query(`INSERT INTO staff (name, role, experience, specialty, phone, is_head) VALUES ($1,$2,$3,$4,$5,$6)`, s);
+      }
       console.log('✅ Staff data seeded');
     }
-  });
 
-  // Seed Services
-  db.get("SELECT COUNT(*) as cnt FROM services", (err, row) => {
-    if (row && row.cnt === 0) {
-      const stmt = db.prepare(`INSERT INTO services (name, description, price_from, price_upto, category, gender) VALUES (?,?,?,?,?,?)`);
+    // Seed Services
+    const serviceCount = await query("SELECT COUNT(*) FROM services");
+    if (parseInt(serviceCount.rows[0].count) === 0) {
       const services = [
         ['Haircut & Styling', 'Precision cuts and styling.', 500, 1200, 'Hair', 'unisex'],
         ['Hair Color & Highlights', 'Advanced color techniques.', 2500, null, 'Hair', 'unisex'],
@@ -96,11 +98,14 @@ const seedData = () => {
         ['Nail Studio', 'Manicure and nail art.', 300, 1000, 'Nails', 'unisex'],
         ['Bridal Packages', 'Complete bridal beauty.', 10000, 20000, 'Bridal', 'women']
       ];
-      services.forEach(s => stmt.run(...s));
-      stmt.finalize();
+      for (const s of services) {
+        await query(`INSERT INTO services (name, description, price_from, price_upto, category, gender) VALUES ($1,$2,$3,$4,$5,$6)`, s);
+      }
       console.log('✅ Services data seeded');
     }
-  });
+  } catch (err) {
+    console.error('❌ Seeding Error:', err.message);
+  }
 };
 
-module.exports = { db, initializeDatabase };
+module.exports = { pool, query, initializeDatabase };

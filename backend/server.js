@@ -1,8 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-const { initializeDatabase, db } = require('./config/db');
+const { initializeDatabase, query } = require('./config/db');
 
 // Import Routes
 const staffRoutes = require('./routes/staff');
@@ -45,17 +46,23 @@ app.use('/api/admin', (req, res, next) => {
 
 app.use('/api/admin/bookings', bookingRoutes); // Re-using booking router for admin paths
 
-app.get('/api/admin/stats', (req, res) => {
-  db.serialize(() => {
+app.get('/api/admin/stats', async (req, res) => {
+  try {
     const stats = {};
-    db.get("SELECT COUNT(*) as total FROM bookings", (e, r) => { stats.total = r ? r.total : 0; });
-    db.get("SELECT COUNT(*) as pending FROM bookings WHERE status='pending'", (e, r) => { stats.pending = r ? r.pending : 0; });
-    db.get("SELECT COUNT(*) as confirmed FROM bookings WHERE status='confirmed'", (e, r) => { stats.confirmed = r ? r.confirmed : 0; });
-    db.get("SELECT COUNT(*) as completed FROM bookings WHERE status='completed'", (e, r) => {
-      stats.completed = r ? r.completed : 0;
-      res.json({ success: true, data: stats });
-    });
-  });
+    const total = await query("SELECT COUNT(*) as total FROM bookings");
+    const pending = await query("SELECT COUNT(*) as pending FROM bookings WHERE status='pending'");
+    const confirmed = await query("SELECT COUNT(*) as confirmed FROM bookings WHERE status='confirmed'");
+    const completed = await query("SELECT COUNT(*) as completed FROM bookings WHERE status='completed'");
+
+    stats.total = total.rows[0].total || 0;
+    stats.pending = pending.rows[0].pending || 0;
+    stats.confirmed = confirmed.rows[0].confirmed || 0;
+    stats.completed = completed.rows[0].completed || 0;
+
+    res.json({ success: true, data: stats });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // ── SPA Routing ─────────────────────────────────────────────
