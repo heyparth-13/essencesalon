@@ -48,16 +48,21 @@ app.use('/api/admin/bookings', bookingRoutes); // Re-using booking router for ad
 
 app.get('/api/admin/stats', async (req, res) => {
   try {
-    const stats = {};
-    const total = await query("SELECT COUNT(*) as total FROM bookings");
-    const pending = await query("SELECT COUNT(*) as pending FROM bookings WHERE status='pending'");
-    const confirmed = await query("SELECT COUNT(*) as confirmed FROM bookings WHERE status='confirmed'");
-    const completed = await query("SELECT COUNT(*) as completed FROM bookings WHERE status='completed'");
+    const stats = { total: 0, pending: 0, confirmed: 0, completed: 0 };
+    
+    try {
+      const total = await query("SELECT COUNT(*) as total FROM bookings");
+      const pending = await query("SELECT COUNT(*) as pending FROM bookings WHERE status='pending'");
+      const confirmed = await query("SELECT COUNT(*) as confirmed FROM bookings WHERE status='confirmed'");
+      const completed = await query("SELECT COUNT(*) as completed FROM bookings WHERE status='completed'");
 
-    stats.total = total.rows[0].total || 0;
-    stats.pending = pending.rows[0].pending || 0;
-    stats.confirmed = confirmed.rows[0].confirmed || 0;
-    stats.completed = completed.rows[0].completed || 0;
+      stats.total = total.rows[0]?.total || 0;
+      stats.pending = pending.rows[0]?.pending || 0;
+      stats.confirmed = confirmed.rows[0]?.confirmed || 0;
+      stats.completed = completed.rows[0]?.completed || 0;
+    } catch (dbErr) {
+      console.warn('⚠️ Admin Stats DB Error (using zeros):', dbErr.message);
+    }
 
     res.json({ success: true, data: stats });
   } catch (err) {
