@@ -4,15 +4,18 @@ require('dotenv').config();
 
 let pool;
 let db;
-const isPostgres = !!process.env.DATABASE_URL;
+const isPostgres = !!(process.env.DATABASE_URL || process.env.POSTGRES_URL);
 const isVercel = !!process.env.VERCEL;
 
 if (isPostgres) {
+  const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
   pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    connectionString: connectionString,
+    ssl: {
+      rejectUnauthorized: false
+    }
   });
-  console.log('📡 Using PostgreSQL Database');
+  console.log('📡 Connected to Live Postgres Database');
 } else if (!isVercel) {
   try {
     const sqlite3 = require('sqlite3').verbose();
