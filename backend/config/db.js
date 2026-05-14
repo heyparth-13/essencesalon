@@ -1,20 +1,75 @@
 const { Pool } = require('pg');
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 require('dotenv').config();
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-});
+let pool;
+let db;
+const isPostgres = !!process.env.DATABASE_URL;
 
-const query = (text, params) => pool.query(text, params);
+if (isPostgres) {
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+  console.log('📡 Using PostgreSQL Database');
+} else {
+  const dbPath = path.join(__dirname, '../essence_salon.db');
+  db = new sqlite3.Database(dbPath, (err) => {
+    if (err) console.error('❌ SQLite connection error:', err.message);
+    else console.log('📁 Using local SQLite Database');
+  });
+}
+
+const query = (text, params = []) => {
+  if (isPostgres) {
+    return pool.query(text, params);
+  } else {
+    // Convert PostgreSQL $1, $2, ... to SQLite ?
+    let sqliteText = text.replace(/\$\d+/g, '?');
+    
+    // SQLite emulation of RETURNING id (very basic)
+    const hasReturning = sqliteText.toUpperCase().includes('RETURNING');
+    if (hasReturning) {
+      sqliteText = sqliteText.split(/RETURNING/i)[0].trim();
+    }
+
+    return new Promise((resolve, reject) => {
+      const isSelect = sqliteText.trim().toUpperCase().startsWith('SELECT');
+      const method = isSelect ? 'all' : 'run';
+      
+      if (method === 'all') {
+        db.all(sqliteText, params, (err, rows) => {
+          if (err) reject(err);
+          else resolve({ rows });
+        });
+      } else {
+        db.run(sqliteText, params, function(err) {
+          if (err) reject(err);
+          else {
+            const result = { rows: [], lastID: this.lastID, changes: this.changes };
+            if (hasReturning) {
+              // Emulate RETURNING id by putting lastID in rows
+              result.rows = [{ id: this.lastID }];
+            }
+            resolve(result);
+          }
+        });
+      }
+    });
+  }
+};
 
 const initializeDatabase = async () => {
   try {
+    const autoIncrement = isPostgres ? 'SERIAL' : 'INTEGER';
+    const primaryKey = isPostgres ? 'SERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
+
     // Bookings table
     await query(`CREATE TABLE IF NOT EXISTS bookings (
-      id          SERIAL PRIMARY KEY,
+      id          ${primaryKey},
       full_name   TEXT NOT NULL,
       phone       TEXT NOT NULL,
       email       TEXT,
@@ -29,7 +84,7 @@ const initializeDatabase = async () => {
 
     // Staff table
     await query(`CREATE TABLE IF NOT EXISTS staff (
-      id         SERIAL PRIMARY KEY,
+      id         ${primaryKey},
       name       TEXT NOT NULL,
       role       TEXT NOT NULL,
       experience TEXT NOT NULL,
@@ -40,7 +95,7 @@ const initializeDatabase = async () => {
 
     // Services table
     await query(`CREATE TABLE IF NOT EXISTS services (
-      id          SERIAL PRIMARY KEY,
+      id          ${primaryKey},
       name        TEXT NOT NULL,
       description TEXT,
       price_from  INTEGER,
@@ -51,7 +106,7 @@ const initializeDatabase = async () => {
 
     // Testimonials table
     await query(`CREATE TABLE IF NOT EXISTS testimonials (
-      id        SERIAL PRIMARY KEY,
+      id        ${primaryKey},
       client    TEXT NOT NULL,
       review    TEXT NOT NULL,
       rating    INTEGER DEFAULT 5,
@@ -70,8 +125,10 @@ const initializeDatabase = async () => {
 const seedData = async () => {
   try {
     // Seed Staff
-    const staffCount = await query("SELECT COUNT(*) FROM staff");
-    if (parseInt(staffCount.rows[0].count) === 0) {
+    const staffCount = await query("SELECT COUNT(*) as count FROM staff");
+    const count = isPostgres ? parseInt(staffCount.rows[0].count) : staffCount.rows[0].count;
+    
+    if (count === 0) {
       const staff = [
         ['Vipul Valand', 'Co-Founder & Head Stylist', '20+ Years', 'Master Hair Styling, Advanced Colour, Men & Women Cuts', '9909706587', 1],
         ['Bhavesh Sharma', 'Co-Founder & Beauty Director', '22+ Years', 'Bridal Makeovers, Skin Treatments, Unisex Styling, Spa Therapies', '9909706587', 1],
@@ -86,8 +143,10 @@ const seedData = async () => {
     }
 
     // Seed Services
-    const serviceCount = await query("SELECT COUNT(*) FROM services");
-    if (parseInt(serviceCount.rows[0].count) === 0) {
+    const serviceCount = await query("SELECT COUNT(*) as count FROM services");
+    const sCount = isPostgres ? parseInt(serviceCount.rows[0].count) : serviceCount.rows[0].count;
+
+    if (sCount === 0) {
       const services = [
         ['Haircut & Styling', 'Precision cuts and styling.', 500, 1200, 'Hair', 'unisex'],
         ['Hair Color & Highlights', 'Advanced color techniques.', 2500, null, 'Hair', 'unisex'],
@@ -109,3 +168,4 @@ const seedData = async () => {
 };
 
 module.exports = { pool, query, initializeDatabase };
+
