@@ -27,46 +27,56 @@ if (isPostgres) {
   });
 }
 
-const query = (text, params = []) => {
-  if (isPostgres) {
-    return pool.query(text, params);
-  } else {
-    // Convert PostgreSQL $1, $2, ... to SQLite ?
-    let sqliteText = text.replace(/\$\d+/g, '?');
-    
-    // SQLite emulation of RETURNING id (very basic)
-    const hasReturning = sqliteText.toUpperCase().includes('RETURNING');
-    if (hasReturning) {
-      sqliteText = sqliteText.split(/RETURNING/i)[0].trim();
-    }
-
-    return new Promise((resolve, reject) => {
-      const isSelect = sqliteText.trim().toUpperCase().startsWith('SELECT');
-      const method = isSelect ? 'all' : 'run';
+const query = async (text, params = []) => {
+  try {
+    if (isPostgres) {
+      return await pool.query(text, params);
+    } else {
+      if (!db) throw new Error('Database not initialized');
       
-      if (method === 'all') {
-        db.all(sqliteText, params, (err, rows) => {
-          if (err) reject(err);
-          else resolve({ rows });
-        });
-      } else {
-        db.run(sqliteText, params, function(err) {
+      let sqliteText = text.replace(/\$\d+/g, '?');
+      const hasReturning = sqliteText.toUpperCase().includes('RETURNING');
+      if (hasReturning) {
+        sqliteText = sqliteText.split(/RETURNING/i)[0].trim();
+      }
+
+      return new Promise((resolve, reject) => {
+        const isSelect = sqliteText.trim().toUpperCase().startsWith('SELECT');
+        const method = isSelect ? 'all' : 'run';
+        
+        db[method](sqliteText, params, function(err, rows) {
           if (err) reject(err);
           else {
-            const result = { rows: [], lastID: this.lastID, changes: this.changes };
-            if (hasReturning) {
-              // Emulate RETURNING id by putting lastID in rows
-              result.rows = [{ id: this.lastID }];
-            }
+            const result = { rows: rows || [], lastID: this?.lastID, changes: this?.changes };
+            if (hasReturning) result.rows = [{ id: this.lastID }];
             resolve(result);
           }
         });
+      });
+    }
+  } catch (err) {
+    console.error('❌ Database Query Error:', err.message);
+    
+    // Fallback for SELECT queries in serverless environments
+    if (text.trim().toUpperCase().startsWith('SELECT')) {
+      try {
+        const fallback = require('./fallback_data.json');
+        if (text.toLowerCase().includes('staff')) return { rows: fallback.staff };
+        if (text.toLowerCase().includes('services')) return { rows: fallback.services };
+        if (text.toLowerCase().includes('testimonials')) return { rows: fallback.testimonials };
+      } catch (fErr) {
+        console.error('❌ Fallback Error:', fErr.message);
       }
-    });
+    }
+    throw err;
   }
 };
 
+let isInitializing = false;
 const initializeDatabase = async () => {
+  if (isInitializing) return;
+  isInitializing = true;
+  
   try {
     const autoIncrement = isPostgres ? 'SERIAL' : 'INTEGER';
     const primaryKey = isPostgres ? 'SERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
@@ -172,4 +182,3 @@ const seedData = async () => {
 };
 
 module.exports = { pool, query, initializeDatabase };
-

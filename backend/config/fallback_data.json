@@ -1,0 +1,124 @@
+{
+  "staff": [
+    {
+      "name": "Vipul Valand",
+      "role": "Co-Founder & Head Stylist",
+      "experience": "20+ Years",
+      "specialty": "Master Hair Styling, Advanced Colour, Men & Women Cuts",
+      "phone": "9909706587",
+      "is_head": 1
+    },
+    {
+      "name": "Bhavesh Sharma",
+      "role": "Co-Founder & Beauty Director",
+      "experience": "22+ Years",
+      "specialty": "Bridal Makeovers, Skin Treatments, Unisex Styling, Spa Therapies",
+      "phone": "9909706587",
+      "is_head": 1
+    },
+    {
+      "name": "Mahesh Valand",
+      "role": "Men's Specialist",
+      "experience": "15+ Years",
+      "specialty": "Men's Haircut, Beard Grooming, Shave, Hair Spa",
+      "phone": null,
+      "is_head": 0
+    },
+    {
+      "name": "Dharti",
+      "role": "Women's Specialist",
+      "experience": "5+ Years",
+      "specialty": "Ladies Haircut, Facial, Waxing, Bridal Prep, Mehandi",
+      "phone": null,
+      "is_head": 0
+    },
+    {
+      "name": "Ankit Sharma",
+      "role": "Men's Specialist",
+      "experience": "8+ Years",
+      "specialty": "Men's Cut, Beard Art, Colour, Hair Treatments",
+      "phone": null,
+      "is_head": 0
+    }
+  ],
+  "services": [
+    {
+      "name": "Haircut & Styling",
+      "description": "Precision cuts and styling.",
+      "price_from": 500,
+      "price_upto": 1200,
+      "category": "Hair",
+      "gender": "unisex"
+    },
+    {
+      "name": "Hair Color & Highlights",
+      "description": "Advanced color techniques.",
+      "price_from": 2500,
+      "price_upto": null,
+      "category": "Hair",
+      "gender": "unisex"
+    },
+    {
+      "name": "Beard & Shave",
+      "description": "Classic grooming for men.",
+      "price_from": 300,
+      "price_upto": null,
+      "category": "Men",
+      "gender": "men"
+    },
+    {
+      "name": "Hair Spa & Keratin",
+      "description": "Deep conditioning treatments.",
+      "price_from": 500,
+      "price_upto": 1000,
+      "category": "Hair",
+      "gender": "unisex"
+    },
+    {
+      "name": "Facial & Skin Care",
+      "description": "Brightening and anti-aging.",
+      "price_from": 1000,
+      "price_upto": 4000,
+      "category": "Skin",
+      "gender": "unisex"
+    },
+    {
+      "name": "Waxing & Threading",
+      "description": "Precision body grooming.",
+      "price_from": 700,
+      "price_upto": 2000,
+      "category": "Body",
+      "gender": "women"
+    },
+    {
+      "name": "Nail Studio",
+      "description": "Manicure and nail art.",
+      "price_from": 300,
+      "price_upto": 1000,
+      "category": "Nails",
+      "gender": "unisex"
+    },
+    {
+      "name": "Bridal Packages",
+      "description": "Complete bridal beauty.",
+      "price_from": 10000,
+      "price_upto": 20000,
+      "category": "Bridal",
+      "gender": "women"
+    }
+  ],
+  "testimonials": [
+    {
+      "client": "Aarav Mehta",
+      "review": "Best salon experience in Thaltej. Vipul is a master of his craft!",
+      "rating": 5,
+      "service": "Haircut"
+    },
+    {
+      "client": "Priya Shah",
+      "review": "Loved the bridal package. Bhavesh and the team are amazing.",
+      "rating": 5,
+      "service": "Bridal"
+    }
+  ]
+}
