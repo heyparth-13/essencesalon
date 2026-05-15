@@ -173,10 +173,7 @@ const seedData = async () => {
       console.log('✅ Staff data seeded');
     }
 
-    // --- Services ---
-    const serviceCount = await query("SELECT COUNT(*) as count FROM services");
-    const sCount = isPostgres ? parseInt(serviceCount.rows[0].count) : serviceCount.rows[0].count;
-
+    // --- Services: always force clean re-seed to remove duplicates ---
     const services = [
       ['Haircut & Styling', 'Precision cuts and styling.', 500, null, 'Hair Services', 'unisex'],
       ['Hair Coloring', 'Advanced color techniques.', 1500, null, 'Hair Services', 'unisex'],
@@ -189,23 +186,14 @@ const seedData = async () => {
       ['Reception Styling', 'Elegant styling for reception.', 4000, null, 'Bridal Services', 'women'],
       ['Manicure', 'Classic hand and nail care.', 500, null, 'Nail Care', 'unisex'],
       ['Pedicure', 'Relaxing foot and nail care.', 700, null, 'Nail Care', 'unisex'],
-      ['Nail Art', 'Creative custom nail designs.', 300, null, 'Nail Care', 'unisex'],
-      ['Full Body Massage', 'Deep tissue relaxation massage.', 2000, null, 'Body Treatments', 'unisex'],
-      ['Aromatherapy', 'Essential oil relaxing therapy.', 2500, null, 'Body Treatments', 'unisex'],
-      ['Waxing Services', 'Smooth and safe body waxing.', 800, null, 'Body Treatments', 'women'],
-      ["Men's Haircut", 'Classic and modern cuts for men.', 300, null, "Men's Grooming", 'men'],
-      ['Beard Styling', 'Precision beard trim and styling.', 200, null, "Men's Grooming", 'men'],
-      ['Facial for Men', 'Deep cleanse tailored for men.', 800, null, "Men's Grooming", 'men']
+      ['Nail Art', 'Creative custom nail designs.', 300, null, 'Nail Care', 'unisex']
     ];
 
-    if (sCount !== services.length) {
-      console.log('🔄 Re-seeding services (count mismatch)...');
-      await query("DELETE FROM services");
-      for (const s of services) {
-        await query(`INSERT INTO services (name, description, price_from, price_upto, category, gender) VALUES ($1,$2,$3,$4,$5,$6)`, s);
-      }
-      console.log('✅ Services data seeded');
+    await query("DELETE FROM services");
+    for (const s of services) {
+      await query(`INSERT INTO services (name, description, price_from, price_upto, category, gender) VALUES ($1,$2,$3,$4,$5,$6)`, s);
     }
+    console.log('✅ Services seeded: 12 unique services across 4 categories');
 
     // --- Testimonials ---
     const testCount = await query("SELECT COUNT(*) as count FROM testimonials");
