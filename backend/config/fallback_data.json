@@ -42,70 +42,24 @@
     }
   ],
   "services": [
-    {
-      "name": "Haircut & Styling",
-      "description": "Precision cuts and styling.",
-      "price_from": 500,
-      "price_upto": 1200,
-      "category": "Hair",
-      "gender": "unisex"
-    },
-    {
-      "name": "Hair Color & Highlights",
-      "description": "Advanced color techniques.",
-      "price_from": 2500,
-      "price_upto": null,
-      "category": "Hair",
-      "gender": "unisex"
-    },
-    {
-      "name": "Beard & Shave",
-      "description": "Classic grooming for men.",
-      "price_from": 300,
-      "price_upto": null,
-      "category": "Men",
-      "gender": "men"
-    },
-    {
-      "name": "Hair Spa & Keratin",
-      "description": "Deep conditioning treatments.",
-      "price_from": 500,
-      "price_upto": 1000,
-      "category": "Hair",
-      "gender": "unisex"
-    },
-    {
-      "name": "Facial & Skin Care",
-      "description": "Brightening and anti-aging.",
-      "price_from": 1000,
-      "price_upto": 4000,
-      "category": "Skin",
-      "gender": "unisex"
-    },
-    {
-      "name": "Waxing & Threading",
-      "description": "Precision body grooming.",
-      "price_from": 700,
-      "price_upto": 2000,
-      "category": "Body",
-      "gender": "women"
-    },
-    {
-      "name": "Nail Studio",
-      "description": "Manicure and nail art.",
-      "price_from": 300,
-      "price_upto": 1000,
-      "category": "Nails",
-      "gender": "unisex"
-    },
-    {
-      "name": "Bridal Packages",
-      "description": "Complete bridal beauty.",
-      "price_from": 10000,
-      "price_upto": 20000,
-      "category": "Bridal",
-      "gender": "women"
-    }
+    { "name": "Haircut & Styling", "description": "Precision cuts and styling.", "price_from": 500, "price_upto": null, "category": "Hair Services", "gender": "unisex" },
+    { "name": "Hair Coloring", "description": "Advanced color techniques.", "price_from": 1500, "price_upto": null, "category": "Hair Services", "gender": "unisex" },
+    { "name": "Highlights & Balayage", "description": "Trendy highlights and balayage.", "price_from": 2500, "price_upto": null, "category": "Hair Services", "gender": "unisex" },
+    { "name": "Classic Facial", "description": "Deep cleansing and relaxing.", "price_from": 1000, "price_upto": null, "category": "Skin & Facial", "gender": "unisex" },
+    { "name": "Gold Facial", "description": "Luxurious gold glow facial.", "price_from": 2000, "price_upto": null, "category": "Skin & Facial", "gender": "unisex" },
+    { "name": "Anti-Aging Treatment", "description": "Rejuvenating anti-aging therapy.", "price_from": 3000, "price_upto": null, "category": "Skin & Facial", "gender": "unisex" },
+    { "name": "Bridal Makeup", "description": "Flawless makeup for your big day.", "price_from": 5000, "price_upto": null, "category": "Bridal Services", "gender": "women" },
+    { "name": "Pre-Bridal Package", "description": "Complete pre-wedding prep.", "price_from": 8000, "price_upto": null, "category": "Bridal Services", "gender": "women" },
+    { "name": "Reception Styling", "description": "Elegant styling for reception.", "price_from": 4000, "price_upto": null, "category": "Bridal Services", "gender": "women" },
+    { "name": "Manicure", "description": "Classic hand and nail care.", "price_from": 500, "price_upto": null, "category": "Nail Care", "gender": "unisex" },
+    { "name": "Pedicure", "description": "Relaxing foot and nail care.", "price_from": 700, "price_upto": null, "category": "Nail Care", "gender": "unisex" },
+    { "name": "Nail Art", "description": "Creative custom nail designs.", "price_from": 300, "price_upto": null, "category": "Nail Care", "gender": "unisex" },
+    { "name": "Full Body Massage", "description": "Deep tissue relaxation massage.", "price_from": 2000, "price_upto": null, "category": "Body Treatments", "gender": "unisex" },
+    { "name": "Aromatherapy", "description": "Essential oil relaxing therapy.", "price_from": 2500, "price_upto": null, "category": "Body Treatments", "gender": "unisex" },
+    { "name": "Waxing Services", "description": "Smooth and safe body waxing.", "price_from": 800, "price_upto": null, "category": "Body Treatments", "gender": "women" },
+    { "name": "Men's Haircut", "description": "Classic and modern cuts for men.", "price_from": 300, "price_upto": null, "category": "Men's Grooming", "gender": "men" },
+    { "name": "Beard Styling", "description": "Precision beard trim and styling.", "price_from": 200, "price_upto": null, "category": "Men's Grooming", "gender": "men" },
+    { "name": "Facial for Men", "description": "Deep cleanse tailored for men.", "price_from": 800, "price_upto": null, "category": "Men's Grooming", "gender": "men" }
   ],
   "testimonials": [
     {

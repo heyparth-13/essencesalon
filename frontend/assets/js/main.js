@@ -173,7 +173,7 @@ async function loadServices() {
     const grid = document.getElementById('servicesGrid');
     if (!grid) return;
 
-    const icons = { 'Hair': '✂', 'Men': '🪒', 'Skin': '💆', 'Body': '🌿', 'Nails': '💅', 'Bridal': '👰' };
+    const icons = { 'Hair Services': '✂', 'Men\'s Grooming': '🪒', 'Skin & Facial': '💆', 'Body Treatments': '🌿', 'Nail Care': '💅', 'Bridal Services': '👰' };
 
     try {
         const res = await fetch(`${API}/services`);
@@ -190,7 +190,7 @@ async function loadServices() {
         grid.innerHTML = Object.keys(categories).map(cat => `
             <div class="svc-card reveal">
                 <span class="svc-emoji">${icons[cat] || '✨'}</span>
-                <h3 class="svc-name">${cat} Services</h3>
+                <h3 class="svc-name">${cat}</h3>
                 <ul class="svc-list">
                     ${categories[cat].map(s => `
                         <li>

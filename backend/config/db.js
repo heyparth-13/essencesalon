@@ -178,14 +178,24 @@ const seedData = async () => {
     const sCount = isPostgres ? parseInt(serviceCount.rows[0].count) : serviceCount.rows[0].count;
 
     const services = [
-      ['Haircut & Styling', 'Precision cuts and styling.', 500, 1200, 'Hair', 'unisex'],
-      ['Hair Color & Highlights', 'Advanced color techniques.', 2500, null, 'Hair', 'unisex'],
-      ['Beard & Shave', 'Classic grooming for men.', 300, null, 'Men', 'men'],
-      ['Hair Spa & Keratin', 'Deep conditioning treatments.', 500, 1000, 'Hair', 'unisex'],
-      ['Facial & Skin Care', 'Brightening and anti-aging.', 1000, 4000, 'Skin', 'unisex'],
-      ['Waxing & Threading', 'Precision body grooming.', 700, 2000, 'Body', 'women'],
-      ['Nail Studio', 'Manicure and nail art.', 300, 1000, 'Nails', 'unisex'],
-      ['Bridal Packages', 'Complete bridal beauty.', 10000, 20000, 'Bridal', 'women']
+      ['Haircut & Styling', 'Precision cuts and styling.', 500, null, 'Hair Services', 'unisex'],
+      ['Hair Coloring', 'Advanced color techniques.', 1500, null, 'Hair Services', 'unisex'],
+      ['Highlights & Balayage', 'Trendy highlights and balayage.', 2500, null, 'Hair Services', 'unisex'],
+      ['Classic Facial', 'Deep cleansing and relaxing.', 1000, null, 'Skin & Facial', 'unisex'],
+      ['Gold Facial', 'Luxurious gold glow facial.', 2000, null, 'Skin & Facial', 'unisex'],
+      ['Anti-Aging Treatment', 'Rejuvenating anti-aging therapy.', 3000, null, 'Skin & Facial', 'unisex'],
+      ['Bridal Makeup', 'Flawless makeup for your big day.', 5000, null, 'Bridal Services', 'women'],
+      ['Pre-Bridal Package', 'Complete pre-wedding prep.', 8000, null, 'Bridal Services', 'women'],
+      ['Reception Styling', 'Elegant styling for reception.', 4000, null, 'Bridal Services', 'women'],
+      ['Manicure', 'Classic hand and nail care.', 500, null, 'Nail Care', 'unisex'],
+      ['Pedicure', 'Relaxing foot and nail care.', 700, null, 'Nail Care', 'unisex'],
+      ['Nail Art', 'Creative custom nail designs.', 300, null, 'Nail Care', 'unisex'],
+      ['Full Body Massage', 'Deep tissue relaxation massage.', 2000, null, 'Body Treatments', 'unisex'],
+      ['Aromatherapy', 'Essential oil relaxing therapy.', 2500, null, 'Body Treatments', 'unisex'],
+      ['Waxing Services', 'Smooth and safe body waxing.', 800, null, 'Body Treatments', 'women'],
+      ["Men's Haircut", 'Classic and modern cuts for men.', 300, null, "Men's Grooming", 'men'],
+      ['Beard Styling', 'Precision beard trim and styling.', 200, null, "Men's Grooming", 'men'],
+      ['Facial for Men', 'Deep cleanse tailored for men.', 800, null, "Men's Grooming", 'men']
     ];
 
     if (sCount !== services.length) {
