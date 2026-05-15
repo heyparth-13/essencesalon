@@ -37,7 +37,7 @@ if (isPostgres) {
 
 const query = async (text, params = []) => {
   const isSelect = text.trim().toUpperCase().startsWith('SELECT');
-  
+
   try {
     let result;
     if (isPostgres) {
@@ -49,7 +49,7 @@ const query = async (text, params = []) => {
 
       result = await new Promise((resolve, reject) => {
         const method = isSelect ? 'all' : 'run';
-        db[method](sqliteText, params, function(err, rows) {
+        db[method](sqliteText, params, function (err, rows) {
           if (err) reject(err);
           else {
             const r = { rows: rows || [], lastID: this?.lastID, changes: this?.changes };
@@ -95,7 +95,7 @@ let isInitializing = false;
 const initializeDatabase = async () => {
   if (isInitializing || (isVercel && !isPostgres)) return;
   isInitializing = true;
-  
+
   try {
     const primaryKey = isPostgres ? 'SERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
 
@@ -155,7 +155,7 @@ const seedData = async () => {
     // --- Staff ---
     const staffCount = await query("SELECT COUNT(*) as count FROM staff");
     const count = isPostgres ? parseInt(staffCount.rows[0].count) : staffCount.rows[0].count;
-    
+
     const staff = [
       ['Vipul Valand', 'Co-Founder & Head Stylist', '20+ Years', 'Master Hair Styling, Advanced Colour, Men & Women Cuts', '9909706587', 1],
       ['Bhavesh Sharma', 'Co-Founder & Beauty Director', '22+ Years', 'Bridal Makeovers, Skin Treatments, Unisex Styling, Spa Therapies', '9909706587', 1],
@@ -206,7 +206,7 @@ const seedData = async () => {
       ['Priya Shah', 'Loved the bridal package. Bhavesh and the team are absolutely amazing.', 5, 'Bridal', 1],
       ['Rohan Patel', 'Clean, professional and incredibly skilled. My go-to salon in Ahmedabad.', 5, 'Hair Spa', 1],
       ['Nisha Joshi', 'The facial treatment was heavenly. My skin glowed for weeks!', 5, 'Facial', 1],
-      ['Karan Desai', 'Ankit did an amazing beard art. Worth every rupee!', 5, 'Beard Grooming', 1],
+      ['Karan Desai', 'Mahesh did an amazing beard art. Worth every rupee!', 5, 'Beard Grooming', 1],
       ['Simran Kaur', 'Dharti is so talented! My hair looks stunning after the keratin treatment.', 5, 'Hair Spa & Keratin', 1]
     ];
 
