@@ -8,14 +8,10 @@ let db;
 const isPostgres = !!process.env.DATABASE_URL;
 const isVercel = !!process.env.VERCEL;
 
-// Attempt to load fallback data safely
 let fallbackData = { staff: [], services: [], testimonials: [] };
 try {
-  const fallbackPath = path.join(__dirname, 'fallback_data.json');
-  if (fs.existsSync(fallbackPath)) {
-    fallbackData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-    console.log('📦 Fallback data loaded successfully');
-  }
+  fallbackData = require('./fallback_data.json');
+  console.log('📦 Fallback data loaded successfully via require');
 } catch (e) {
   console.error('❌ Failed to load fallback data:', e.message);
 }
