@@ -69,19 +69,95 @@ section{padding:clamp(4rem, 10vw, 8rem) clamp(1rem, 5vw, 8vw);background:var(--b
 .section-title em{font-style:italic;color:var(--accent)}
 
 /* SERVICES */
-.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem}
-.svc-card{background:var(--bg2);padding:clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 2.5rem);border:1px solid var(--border);transition:all 0.5s cubic-bezier(0.4,0,0.2,1);position:relative;overflow:hidden; max-width: 100%;}
-.svc-card::before{content:'';position:absolute;inset:0;background:var(--accent);transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);z-index:0}
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:2rem;
+  align-items:start; /* cards do NOT stretch to same height — each auto-sizes */
+}
+.svc-card{
+  background:var(--bg2);
+  padding:clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 2.5rem);
+  border:1px solid var(--border);
+  transition:all 0.5s cubic-bezier(0.4,0,0.2,1);
+  position:relative;
+  /* REMOVED overflow:hidden — it was clipping list items */
+  overflow:visible;
+  height:auto;      /* always grow to fit content */
+  max-width:100%;
+  box-sizing:border-box;
+}
+/* Hover fill effect — uses pseudo that is clipped by the card boundary */
+.svc-card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:var(--accent);
+  transform:translateY(101%); /* start fully below */
+  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  z-index:0;
+  /* clip only the pseudo, not the content */
+  border-radius:inherit;
+  overflow:hidden;
+}
 .svc-card:hover::before{transform:translateY(0)}
-.svc-card *{position:relative;z-index:1}
-.svc-card:hover *{color:var(--bg) !important}
+.svc-card > *{position:relative;z-index:1}
+.svc-card:hover > *{color:var(--bg) !important}
 .svc-emoji{font-size:3rem;margin-bottom:1.5rem;display:block}
-.svc-name{font-family:var(--font-display);font-size:clamp(1.4rem, 4vw, 1.8rem);margin-bottom:1.5rem;color:var(--accent)}
-.svc-list{list-style:none;display:flex;flex-direction:column;gap:0.8rem}
-.svc-list li{font-size:clamp(0.85rem, 2vw, 0.95rem);color:var(--text2);display:flex;align-items:center;gap:0.8rem}
-.svc-list li::before{content:'•';color:var(--accent);font-size:1.2rem}
+.svc-name{
+  font-family:var(--font-display);
+  font-size:clamp(1.4rem, 4vw, 1.8rem);
+  margin-bottom:1.5rem;
+  color:var(--accent);
+}
+/* List: each row = bullet  |  service name (grows)  |  price (fixed right) */
+.svc-list{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:0.75rem;
+  width:100%;
+}
+.svc-list li{
+  display:flex;
+  align-items:baseline;
+  gap:0.6rem;
+  width:100%;
+  font-size:clamp(0.85rem, 2vw, 0.95rem);
+  color:var(--text2);
+}
+/* Bullet */
+.svc-list li::before{
+  content:'•';
+  color:var(--accent);
+  font-size:1.2rem;
+  flex-shrink:0;
+  line-height:1;
+}
+/* Service name — takes remaining space, wraps naturally */
+.svc-item-name{
+  flex:1 1 0;
+  min-width:0;
+  word-break:break-word;
+  line-height:1.4;
+}
+/* Price — never wraps, sits flush right */
+.svc-item-price{
+  flex-shrink:0;
+  white-space:nowrap;
+  font-size:0.78rem;
+  color:var(--accent);
+  margin-left:auto;
+  padding-left:0.5rem;
+}
 .svc-card:hover .svc-list li{color:var(--bg) !important}
 .svc-card:hover .svc-list li::before{color:var(--bg) !important}
+.svc-card:hover .svc-item-price{color:var(--bg) !important}
+/* Mobile: allow cards to go full-width */
+@media(max-width:600px){
+  .services-grid{grid-template-columns:1fr;}
+  .svc-card{padding:2rem 1.5rem;}
+}
 
 /* TEAM */
 .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(1.5rem, 4vw, 3rem)}

@@ -181,8 +181,16 @@ async function loadServices() {
         
         if (!data || data.length === 0) throw new Error('No services found');
 
+        // Deduplicate services by name to prevent double-rendering
+        const seenNames = new Set();
+        const uniqueServices = data.filter(s => {
+            if (seenNames.has(s.name)) return false;
+            seenNames.add(s.name);
+            return true;
+        });
+
         const categories = {};
-        data.forEach(s => {
+        uniqueServices.forEach(s => {
             if (!categories[s.category]) categories[s.category] = [];
             categories[s.category].push(s);
         });
@@ -194,10 +202,8 @@ async function loadServices() {
                 <ul class="svc-list">
                     ${categories[cat].map(s => `
                         <li>
-                            <div style="display:flex;justify-content:space-between;width:100%;align-items:baseline">
-                                <span>${s.name}</span>
-                                <span style="font-size:0.75rem;color:var(--accent)">₹${s.price_from}+</span>
-                            </div>
+                            <span class="svc-item-name">${s.name}</span>
+                            <span class="svc-item-price">₹${s.price_from}+</span>
                         </li>
                     `).join('')}
                 </ul>
@@ -227,8 +233,9 @@ async function loadTeam() {
             return true;
         });
         
-        const heads = uniqueData.filter(s => s.is_head);
-        const others = uniqueData.filter(s => !s.is_head);
+        const isHead = (s) => String(s.is_head) === '1' || s.is_head === true || String(s.is_head).toLowerCase() === 'true';
+        const heads = uniqueData.filter(isHead);
+        const others = uniqueData.filter(s => !isHead(s));
         
         let html = '';
         
@@ -245,6 +252,9 @@ async function loadTeam() {
                         <h3 class="member-name">${s.name}</h3>
                         <span class="member-role">${s.role}</span>
                         <p class="member-desc">${s.specialty || 'Director & Master Stylist'}</p>
+                        <div style="margin-top:1rem;display:flex;gap:1rem;color:var(--accent);font-size:1.2rem;min-height:24px;">
+                            ${s.phone ? `<a href="tel:${s.phone}" style="color:var(--accent);text-decoration:none;" title="Call">📱</a> <a href="https://wa.me/91${s.phone}" style="color:var(--accent);text-decoration:none;" title="WhatsApp" target="_blank">💬</a>` : ''}
+                        </div>
                     </div>
                 </div>`).join('')}
             </div>`;
@@ -254,12 +264,17 @@ async function loadTeam() {
             html += `<div class="team-grid" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;margin-top:4rem">
                 ${others.map(s => `
                 <div class="member-card reveal" style="background:var(--bg2);border:1px solid var(--border);padding:2rem;text-align:center;display:flex;flex-direction:column;align-items:center;">
-                    <div style="width:70px;height:70px;border-radius:50%;background:rgba(184,150,62,0.08);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-family:var(--font-display);margin-bottom:1.5rem;border:1px solid var(--border)">
-                        ${s.name.charAt(0)}
+                    <div style="width:100px;height:100px;border-radius:50%;overflow:hidden;margin-bottom:1.5rem;border:2px solid var(--accent)">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=1a1a1a&color=B8963E&size=500" 
+                             alt="${s.name}" style="width:100%;height:100%;object-fit:cover;">
                     </div>
                     <h4 class="member-name" style="font-size:1.3rem;margin-bottom:0.3rem">${s.name}</h4>
                     <span class="member-role" style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text2)">${s.role}</span>
-                    <div style="margin-top:1rem;font-size:0.85rem;color:var(--text3)">${s.experience || 'Experienced Specialist'}</div>
+                    <div style="margin-top:1rem;font-size:0.9rem;color:var(--text2)">${s.specialty || ''}</div>
+                    <div style="margin-top:0.5rem;font-size:0.85rem;color:var(--text3)">${s.experience || 'Experienced Specialist'}</div>
+                    <div style="margin-top:1rem;display:flex;gap:1rem;color:var(--accent);font-size:1.2rem;min-height:24px;">
+                        ${s.phone ? `<a href="tel:${s.phone}" style="color:var(--accent);text-decoration:none;" title="Call">📱</a> <a href="https://wa.me/91${s.phone}" style="color:var(--accent);text-decoration:none;" title="WhatsApp" target="_blank">💬</a>` : ''}
+                    </div>
                 </div>`).join('')}
             </div>`;
         }
