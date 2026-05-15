@@ -1,0 +1,8 @@
+{
+  "name": "essence-salon-root",
+  "version": "1.0.0",
+  "scripts": {
+    "install": "cd backend && npm install",
+    "build": "mkdir -p dist && cp -r frontend/* dist/"
+  }
+}
