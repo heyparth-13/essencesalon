@@ -164,14 +164,12 @@ const seedData = async () => {
       ['Ankit Sharma', "Men's Specialist", '8+ Years', "Men's Cut, Beard Art, Colour, Hair Treatments", null, 0]
     ];
 
-    if (count !== staff.length) {
-      console.log('🔄 Re-seeding staff (count mismatch)...');
-      await query("DELETE FROM staff");
-      for (const s of staff) {
-        await query(`INSERT INTO staff (name, role, experience, specialty, phone, is_head) VALUES ($1,$2,$3,$4,$5,$6)`, s);
-      }
-      console.log('✅ Staff data seeded');
+    // Always force a clean re-seed to remove any duplicate or extra rows
+    await query("DELETE FROM staff");
+    for (const s of staff) {
+      await query(`INSERT INTO staff (name, role, experience, specialty, phone, is_head) VALUES ($1,$2,$3,$4,$5,$6)`, s);
     }
+    console.log('✅ Staff data seeded (5 unique members)');
 
     // --- Services ---
     const serviceCount = await query("SELECT COUNT(*) as count FROM services");
@@ -181,6 +179,8 @@ const seedData = async () => {
       ['Haircut & Styling', 'Precision cuts and styling.', 500, null, 'Hair Services', 'unisex'],
       ['Hair Coloring', 'Advanced color techniques.', 1500, null, 'Hair Services', 'unisex'],
       ['Highlights & Balayage', 'Trendy highlights and balayage.', 2500, null, 'Hair Services', 'unisex'],
+      ['Keratin Treatment', 'Smooth and frizz-free keratin therapy.', 4000, null, 'Hair Services', 'unisex'],
+      ['Hair Spa', 'Nourishing deep conditioning hair spa.', 1800, null, 'Hair Services', 'unisex'],
       ['Classic Facial', 'Deep cleansing and relaxing.', 1000, null, 'Skin & Facial', 'unisex'],
       ['Gold Facial', 'Luxurious gold glow facial.', 2000, null, 'Skin & Facial', 'unisex'],
       ['Anti-Aging Treatment', 'Rejuvenating anti-aging therapy.', 3000, null, 'Skin & Facial', 'unisex'],
@@ -190,22 +190,20 @@ const seedData = async () => {
       ['Manicure', 'Classic hand and nail care.', 500, null, 'Nail Care', 'unisex'],
       ['Pedicure', 'Relaxing foot and nail care.', 700, null, 'Nail Care', 'unisex'],
       ['Nail Art', 'Creative custom nail designs.', 300, null, 'Nail Care', 'unisex'],
-      ['Full Body Massage', 'Deep tissue relaxation massage.', 2000, null, 'Body Treatments', 'unisex'],
-      ['Aromatherapy', 'Essential oil relaxing therapy.', 2500, null, 'Body Treatments', 'unisex'],
-      ['Waxing Services', 'Smooth and safe body waxing.', 800, null, 'Body Treatments', 'women'],
-      ["Men's Haircut", 'Classic and modern cuts for men.', 300, null, "Men's Grooming", 'men'],
-      ['Beard Styling', 'Precision beard trim and styling.', 200, null, "Men's Grooming", 'men'],
-      ['Facial for Men', 'Deep cleanse tailored for men.', 800, null, "Men's Grooming", 'men']
+      ['Full Body Massage', 'Relaxing full body massage.', 2500, null, 'Body Treatments', 'unisex'],
+      ['Aromatherapy', 'Soothing essential oils therapy.', 3000, null, 'Body Treatments', 'unisex'],
+      ['Waxing Services', 'Smooth and painless waxing.', 800, null, 'Body Treatments', 'women'],
+      ["Men's Haircut", "Classic and modern men's cuts.", 400, null, "Men's Grooming", 'men'],
+      ['Beard Styling', 'Precision beard grooming.', 300, null, "Men's Grooming", 'men'],
+      ['Facial for Men', 'Deep cleansing facial for men.', 1200, null, "Men's Grooming", 'men']
     ];
 
-    if (sCount !== services.length) {
-      console.log('🔄 Re-seeding services (count mismatch)...');
-      await query("DELETE FROM services");
-      for (const s of services) {
-        await query(`INSERT INTO services (name, description, price_from, price_upto, category, gender) VALUES ($1,$2,$3,$4,$5,$6)`, s);
-      }
-      console.log('✅ Services data seeded');
+    // Always force a clean re-seed to remove any duplicate or extra rows
+    await query("DELETE FROM services");
+    for (const s of services) {
+      await query(`INSERT INTO services (name, description, price_from, price_upto, category, gender) VALUES ($1,$2,$3,$4,$5,$6)`, s);
     }
+    console.log('✅ Services data seeded (20 unique services across 6 categories)');
 
     // --- Testimonials ---
     const testCount = await query("SELECT COUNT(*) as count FROM testimonials");

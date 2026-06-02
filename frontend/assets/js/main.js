@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set min date for booking (Asia/Kolkata Timezone)
     const dateInput = document.getElementById('f_date');
     if (dateInput) {
-        // Use Intl.DateTimeFormat to get exactly YYYY-MM-DD in IST
         const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
         dateInput.min = todayStr;
     }
@@ -49,8 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
             navLinks.classList.toggle('active');
             menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
         });
-
-        // Close menu when a link is clicked
         navLinks.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 navLinks.classList.remove('active');
@@ -83,12 +80,10 @@ function setupFormValidation() {
     function validateForm() {
         let isValid = true;
 
-        // Name and Service required
         if (!nameInput?.value.trim() || !serviceInput?.value) {
             isValid = false;
         }
 
-        // Phone Validation
         if (phoneInput && phoneInput.value) {
             if (!phoneRegex.test(phoneInput.value)) {
                 phoneInput.style.borderColor = '#ff6b6b';
@@ -101,10 +96,9 @@ function setupFormValidation() {
         } else {
             if (phoneInput) phoneInput.style.borderColor = 'var(--border)';
             if (phoneError) phoneError.style.display = 'none';
-            isValid = false; // required field
+            isValid = false;
         }
 
-        // Email Validation (Optional, but if filled must be valid)
         if (emailInput && emailInput.value) {
             if (!emailRegex.test(emailInput.value)) {
                 emailInput.style.borderColor = '#ff6b6b';
@@ -119,7 +113,6 @@ function setupFormValidation() {
             if (emailError) emailError.style.display = 'none';
         }
 
-        // Time Validation (Must be between 10:00 and 20:00, 30 min intervals)
         if (timeInput && timeInput.value) {
             const [hours, mins] = timeInput.value.split(':').map(Number);
             if (hours < 10 || hours > 20 || (hours === 20 && mins > 0) || (mins !== 0 && mins !== 30)) {
@@ -133,7 +126,7 @@ function setupFormValidation() {
         } else {
             if (timeInput) timeInput.style.borderColor = 'var(--border)';
             if (timeError) timeError.style.display = 'none';
-            isValid = false; // Required
+            isValid = false;
         }
 
         if (dateInput && dateInput.value) {
@@ -145,7 +138,6 @@ function setupFormValidation() {
         if (nameInput && nameInput.value.trim()) nameInput.style.borderColor = '#4caf50';
         if (serviceInput && serviceInput.value) serviceInput.style.borderColor = '#4caf50';
 
-        // Toggle Button
         if (submitBtn) {
             submitBtn.disabled = !isValid;
             submitBtn.style.opacity = isValid ? '1' : '0.5';
@@ -153,9 +145,7 @@ function setupFormValidation() {
         }
     }
 
-    // Attach real-time listeners
     if (phoneInput) phoneInput.addEventListener('input', () => {
-        // Prevent typing non-digits
         phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '');
         validateForm();
     });
@@ -209,7 +199,6 @@ async function loadServices() {
                 </ul>
             </div>`).join('');
             
-        // Observe new cards
         document.querySelectorAll('#servicesGrid .reveal').forEach(r => window.revealObserver.observe(r));
     } catch (err) {
         console.error('Service loading failed:', err);
@@ -265,7 +254,8 @@ async function loadTeam() {
                 ${others.map(s => `
                 <div class="member-card reveal" style="background:var(--bg2);border:1px solid var(--border);padding:2rem;text-align:center;display:flex;flex-direction:column;align-items:center;">
                     <div style="width:100px;height:100px;border-radius:50%;overflow:hidden;margin-bottom:1.5rem;border:2px solid var(--accent)">
-                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=1a1a1a&color=B8963E&size=500" 
+                        <img src="images/staff_${s.name.toLowerCase().split(' ')[0]}.jpg" 
+                             onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=1a1a1a&color=B8963E&size=500'"
                              alt="${s.name}" style="width:100%;height:100%;object-fit:cover;">
                     </div>
                     <h4 class="member-name" style="font-size:1.3rem;margin-bottom:0.3rem">${s.name}</h4>
@@ -356,14 +346,12 @@ async function submitBooking() {
         });
         const result = await res.json();
         
-        // Prepare WhatsApp message
         const waText = `New Inquiry from Website:\n\nName: ${formData.full_name}\nPhone: ${formData.phone}\nService: ${formData.service}\nDate: ${formData.date_pref || 'Not specified'}`;
         const waUrl = `https://wa.me/919909706587?text=${encodeURIComponent(waText)}`;
         
         window.open(waUrl, '_blank');
         msg.innerHTML = `<span style="color:var(--accent)">✅ Redirecting to WhatsApp...</span>`;
         
-        // Clear form
         ['f_name', 'f_phone', 'f_email', 'f_date', 'f_time', 'f_msg'].forEach(id => {
             const el = document.getElementById(id);
             if(el) el.value = '';
