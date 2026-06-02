@@ -1,7 +1,5 @@
 # Essence Salon & Spa
 
-
-
 > A premium, scalable, and responsive web application for salon and spa reservations, featuring real-time availability, secure administration, and dynamic service rendering.
 
 ## 🌟 Project Overview
