@@ -1,6 +1,6 @@
 # Essence Salon & Spa
 
-![Essence Salon Banner](https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=1200)
+
 
 > A premium, scalable, and responsive web application for salon and spa reservations, featuring real-time availability, secure administration, and dynamic service rendering.
 
