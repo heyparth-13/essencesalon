@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essence Salon | Staff Attendance & Salary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/attendance.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+    <!-- Login Overlay -->
+    <div id="login-overlay">
+        <div class="card login-card">
+            <h1 class="gold-text">ESSENCE SALON</h1>
+            <p class="text-muted">Attendance Management System</p>
+            <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="••••">
+            <br>
+            <button class="btn btn-primary" onclick="handleLogin()">Login</button>
+        </div>
+    </div>
+
+    <div class="attendance-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo gold-text">ESSENCE</div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="showModule('dashboard-module')">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </li>
+                <li class="nav-item" onclick="showModule('attendance-module')">
+                    <i class="fas fa-calendar-check"></i> Attendance
+                </li>
+                <li class="nav-item" onclick="showModule('staff-module')">
+                    <i class="fas fa-users"></i> Staff Profiles
+                </li>
+                <li class="nav-item" onclick="showModule('payroll-module')">
+                    <i class="fas fa-wallet"></i> Payroll
+                </li>
+                <li class="nav-item" onclick="showModule('history-module')">
+                    <i class="fas fa-history"></i> History
+                </li>
+            </ul>
+            
+            <div style="margin-top: auto;">
+                <button class="btn btn-outline" style="width: 100%" onclick="localStorage.clear(); location.reload();">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+                <div>
+                    <h1 id="clock-time" class="gold-text" style="font-size: 2.5rem; margin: 0;">00:00:00</h1>
+                    <p id="clock-date" class="text-muted">Friday, May 15, 2026</p>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-outline" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+                    <button class="btn btn-outline" onclick="exportToPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+                </div>
+            </header>
+
+            <!-- Dashboard Module -->
+            <section id="dashboard-module" class="module-section">
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <p class="text-muted">Total Staff</p>
+                        <div class="stat-value gold-text" id="total-staff-stat">0</div>
+                    </div>
+                    <div class="card stat-card">
+                        <p class="text-muted">Present Today</p>
+                        <div class="stat-value" id="present-stat" style="color: #4ade80">0</div>
+                    </div>
+                    <div class="card stat-card">
+                        <p class="text-muted">Late/Deductions</p>
+                        <div class="stat-value" id="late-stat" style="color: #f87171">0</div>
+                    </div>
+                </div>
+
+                <div class="card" style="height: 400px;">
+                    <h3>Attendance Analytics</h3>
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Attendance Module -->
+            <section id="attendance-module" class="module-section" style="display: none;">
+                <h2 class="gold-text" style="margin-bottom: 2rem;">Mark Attendance</h2>
+                <div class="staff-grid" id="attendance-grid">
+                    <!-- Dynamic Staff Cards -->
+                </div>
+            </section>
+
+            <!-- Staff Module -->
+            <section id="staff-module" class="module-section" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2 class="gold-text">Staff Management</h2>
+                    <button class="btn btn-primary" onclick="showAddStaffModal()">+ Add Staff</button>
+                </div>
+                <div class="card table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Photo</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Daily Salary</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staff-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Payroll Module -->
+            <section id="payroll-module" class="module-section" style="display: none;">
+                <h2 class="gold-text" style="margin-bottom: 2rem;">Monthly Payroll Summary</h2>
+                <div class="card table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Staff Name</th>
+                                <th>Days Present</th>
+                                <th>Total Deductions</th>
+                                <th>Adjustments</th>
+                                <th>Net Salary</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payroll-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- History Module -->
+            <section id="history-module" class="module-section" style="display: none;">
+                <h2 class="gold-text" style="margin-bottom: 2rem;">Attendance History</h2>
+                <div class="card table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Staff Name</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Deduction</th>
+                                <th>Final for Day</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification">Notification message</div>
+
+    <script src="assets/js/attendance.js"></script>
+</body>
+</html>

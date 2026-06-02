@@ -1,8 +1,11 @@
 const CACHE_NAME = 'essence-admin-v1';
 const ASSETS = [
     '/admin.html',
+    '/attendance.html',
     '/assets/css/admin.css',
-    '/assets/js/admin.js'
+    '/assets/css/attendance.css',
+    '/assets/js/admin.js',
+    '/assets/js/attendance.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -12,10 +15,14 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-    // Only cache GET requests, network-first strategy for admin panel
     if (event.request.method !== 'GET' || event.request.url.includes('/api/')) return;
     
     event.respondWith(
-        fetch(event.request).catch(() => caches.match(event.request))
+        fetch(event.request).catch(async () => {
+            const cache = await caches.open(CACHE_NAME);
+            const cachedResponse = await cache.match(event.request);
+            if (cachedResponse) return cachedResponse;
+            return fetch(event.request);
+        })
     );
 });

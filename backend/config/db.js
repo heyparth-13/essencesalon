@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 let pool;
 let db;
@@ -143,6 +143,39 @@ const initializeDatabase = async () => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`);
 
+    // --- New Attendance Tables ---
+    await query(`CREATE TABLE IF NOT EXISTS attendance_staff (
+      id         ${primaryKey},
+      name       TEXT NOT NULL,
+      role       TEXT NOT NULL,
+      daily_salary INTEGER NOT NULL,
+      photo_url  TEXT,
+      status     TEXT DEFAULT 'active'
+    )`);
+
+    await query(`CREATE TABLE IF NOT EXISTS attendance_records (
+      id              ${primaryKey},
+      staff_id        INTEGER NOT NULL,
+      date            TEXT NOT NULL,
+      check_in        TEXT,
+      check_out       TEXT,
+      base_salary     INTEGER NOT NULL,
+      deduction       INTEGER DEFAULT 0,
+      final_salary    INTEGER NOT NULL,
+      status          TEXT DEFAULT 'present',
+      FOREIGN KEY(staff_id) REFERENCES attendance_staff(id)
+    )`);
+
+    await query(`CREATE TABLE IF NOT EXISTS salary_adjustments (
+      id          ${primaryKey},
+      staff_id    INTEGER NOT NULL,
+      month       TEXT NOT NULL,
+      amount      INTEGER NOT NULL,
+      reason      TEXT,
+      created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(staff_id) REFERENCES attendance_staff(id)
+    )`);
+
     console.log('✅ Database tables initialized');
     await seedData();
   } catch (err) {
@@ -225,6 +258,22 @@ const seedData = async () => {
         await query(`INSERT INTO testimonials (client, review, rating, service, approved) VALUES ($1,$2,$3,$4,$5)`, t);
       }
       console.log('✅ Testimonials data seeded');
+    }
+    // --- Attendance Staff ---
+    const attendanceStaffCount = await query("SELECT COUNT(*) as count FROM attendance_staff");
+    const asCount = isPostgres ? parseInt(attendanceStaffCount.rows[0].count) : attendanceStaffCount.rows[0].count;
+
+    if (asCount === 0) {
+      const aStaff = [
+        ['Vipul Valand', 'Head Stylist', 1500, 'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?w=200&h=200&fit=crop'],
+        ['Bhavesh Sharma', 'Beauty Director', 1800, 'https://images.unsplash.com/photo-1600486913747-55e5470d6f40?w=200&h=200&fit=crop'],
+        ['Dharti', 'Women Specialist', 1000, 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop'],
+        ['Ankit Sharma', 'Men Specialist', 900, 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop']
+      ];
+      for (const s of aStaff) {
+        await query(`INSERT INTO attendance_staff (name, role, daily_salary, photo_url) VALUES ($1,$2,$3,$4)`, s);
+      }
+      console.log('✅ Attendance staff data seeded');
     }
   } catch (err) {
     console.error('❌ Seeding Error:', err.message);

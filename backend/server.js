@@ -1,8 +1,9 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const path = require('path');
+
 const { initializeDatabase, query } = require('./config/db');
 
 // Import Routes
@@ -10,6 +11,7 @@ const staffRoutes = require('./routes/staff');
 const serviceRoutes = require('./routes/services');
 const bookingRoutes = require('./routes/bookings');
 const testimonialRoutes = require('./routes/testimonials');
+const attendanceRoutes = require('./routes/attendance');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -34,6 +36,7 @@ app.use('/api/staff', staffRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/testimonials', testimonialRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
 // ── Admin Specific Endpoints ────────────────────────────────
 // Authentication Middleware
@@ -67,6 +70,15 @@ app.get('/api/admin/stats', async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
+});
+
+// ── Explicit Routes ───────────────────────────────────────────
+app.get('/attendance', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/attendance.html'));
+});
+
+app.get('/attendance.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/attendance.html'));
 });
 
 // ── SPA Routing ─────────────────────────────────────────────
