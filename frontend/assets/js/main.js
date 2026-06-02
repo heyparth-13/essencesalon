@@ -255,7 +255,7 @@ async function loadTeam() {
                 <div class="member-card reveal" style="background:var(--bg2);border:1px solid var(--border);padding:2rem;text-align:center;display:flex;flex-direction:column;align-items:center;">
                     <div style="width:100px;height:100px;border-radius:50%;overflow:hidden;margin-bottom:1.5rem;border:2px solid var(--accent)">
                         <img src="images/staff_${s.name.toLowerCase().split(' ')[0]}.jpg" 
-                             onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=1a1a1a&color=B8963E&size=500'"
+                             onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=1a1a1a&color=B8963E&size=500'" 
                              alt="${s.name}" style="width:100%;height:100%;object-fit:cover;">
                     </div>
                     <h4 class="member-name" style="font-size:1.3rem;margin-bottom:0.3rem">${s.name}</h4>
