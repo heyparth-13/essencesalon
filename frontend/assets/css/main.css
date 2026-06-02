@@ -81,8 +81,7 @@ section{padding:clamp(4rem, 10vw, 8rem) clamp(1rem, 5vw, 8vw);background:var(--b
   border:1px solid var(--border);
   transition:all 0.5s cubic-bezier(0.4,0,0.2,1);
   position:relative;
-  /* REMOVED overflow:hidden — it was clipping list items */
-  overflow:visible;
+  overflow:hidden;
   height:auto;      /* always grow to fit content */
   max-width:100%;
   box-sizing:border-box;
